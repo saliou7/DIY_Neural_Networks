@@ -60,7 +60,7 @@ class MSELoss(Loss):
         assert y.shape == yhat.shape, ValueError(f"y et yhat doivent avoir la meme dimension.")
         return -2 * (y - yhat)
     
-    
+
 class Linear(Module):
     def __init__(self, input_dim, output_dim):
         self.input_dim = input_dim
@@ -73,13 +73,12 @@ class Linear(Module):
         self._grad_bias = np.zeros_like(self.bias)
 
     def forward(self, x):
-        # Ensure input is two-dimensional (batch_size, input_dim)
         assert x.shape[1] == self.input_dim, "Input x must have shape (batch_size, input_dim)"
+        
         self._x = x  # Store for use in backward pass
         return np.dot(x, self.weights) + self.bias
 
     def backward_update_gradient(self, input, delta):
-        # Ensure delta is two-dimensional and matches the output shape
         assert input.shape[1] == self.input_dim, "Input must have shape (batch_size, input_dim)"
         assert delta.shape[1] == self.output_dim, "Delta must have shape (batch_size, output_dim)"
 
