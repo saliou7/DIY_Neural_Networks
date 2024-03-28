@@ -37,8 +37,7 @@ class Module(ABC):
     def backward_delta(self, input, delta):
         ## Calcul la derivee de l'erreur
         pass
-
-    @abstractmethod
+    
     def predict(self, X):
         ## Calcule la prediction
         pass

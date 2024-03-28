@@ -11,19 +11,19 @@ class TanH(Module):
         return np.tanh(data)
 
     def backward_delta(self, data, delta):
-        return delta * (1 - self(data) ** 2)
+        return delta * (1 - self.forward(data) ** 2)
     
     def zero_grad(self):
-        raise NotImplementedError
+        pass
     
     def update_parameters(self, gradient_step=1e-3):
-        raise NotImplementedError
+        pass
     
     def backward_update_gradient(self, data, delta):
-        raise NotImplementedError
+        pass
     
     def predict(self, X):
-        raise NotImplementedError
+        pass
 
 class Sigmoid(Module):
     def __init__(self):
@@ -34,16 +34,16 @@ class Sigmoid(Module):
         return 1 / (1 + np.exp(-data))
 
     def backward_delta(self, data, delta):
-        return delta * (1 - self(data)) * self(data)
+        return delta * (1 - self.forward(data)) * self.forward(data)
     
     def zero_grad(self):
-        raise NotImplementedError
+        pass
         
     def update_parameters(self, gradient_step=1e-3):
-        raise NotImplementedError
+        pass
         
     def backward_update_gradient(self, data, delta):
-        raise NotImplementedError
+        pass
         
     def predict(self, X):
         raise NotImplementedError
