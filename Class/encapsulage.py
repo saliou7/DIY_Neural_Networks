@@ -1,5 +1,7 @@
+import matplotlib.pyplot as plt
 import numpy as np
 from module import Module
+from tqdm import tqdm
 
 
 class Sequential(Module):
@@ -57,16 +59,46 @@ class Optim(object):
         return loss_value
 
     def SGD(
-        self, x_train: np.ndarray, y_train: np.ndarray, batch_size: None, epochs: int
+        self,
+        x_train: np.ndarray,
+        y_train: np.ndarray,
+        batch_size: None,
+        epochs: int,
+        plot: bool = False,
+        x_test: np.ndarray = None,
+        y_test: np.ndarray = None,
+        shuffle: bool = True,
     ):
         num_samples = x_train.shape[0]
-        for epoch in range(epochs):
-            if batch_size == None:
-                batch_size = num_samples
+        if batch_size == None:
+            batch_size = num_samples
+
+        costs = []
+        acc_train = []
+        acc_test = []
+
+        for epoch in tqdm(range(epochs)):
+            cost = 0
+            if shuffle:
+                idx = np.random.permutation(num_samples)
+                x_train = x_train[idx]
+                y_train = y_train[idx]
+
             for i in range(0, num_samples, batch_size):
                 batch_x = x_train[i : i + batch_size]
                 batch_y = y_train[i : i + batch_size]
-                self.step(batch_x, batch_y)
+                cost += np.mean(self.step(batch_x, batch_y))
+
+            cost /= num_samples // batch_size
+
+            if plot:
+                costs.append(cost)
+                acc_train.append(self.score(x_train, y_train) * 100)
+                if x_test is not None:
+                    acc_test.append(self.score(x_test, y_test) * 100)
+
+        if plot:
+            self.plot(costs, acc_train, acc_test)
 
     def score(self, X, y):
         assert X.shape[0] == y.shape[0], ValueError()
@@ -74,3 +106,21 @@ class Optim(object):
             y = y.argmax(axis=1)
         y_hat = np.argmax(self.net.forward(X), axis=1)
         return np.where(y == y_hat, 1, 0).mean()
+
+    def plot(self, costs, acc_train, acc_test):
+
+        fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 5))
+        ax1.set_title("Training Cost")
+        ax1.set_xlabel("Epochs")
+        ax1.set_ylabel("cost")
+        ax1.plot(costs)
+
+        ax2.set_title("Training Accuracy")
+        ax2.set_xlabel("Epochs")
+        ax2.set_ylabel("train accuracy in %")
+        ax2.plot(acc_train)
+
+        ax3.set_title("Test Accuracy")
+        ax3.set_xlabel("Epochs")
+        ax3.set_ylabel("test accuracy in %")
+        ax3.plot(acc_test)
