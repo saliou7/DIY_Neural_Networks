@@ -85,3 +85,36 @@ class LogSoftMaxCrossEntropy(Loss):
         yhat_max = np.max(yhat, axis=1, keepdims=True)
         expy = np.exp(yhat - yhat_max)
         return yhat - onehot + expy / np.sum(expy, axis=1).reshape(-1, 1)
+    
+
+class BCELoss(Loss):
+    def __init__(self, eps=1e-8):
+        super().__init__()
+        self.eps = eps
+
+    def forward(self, y: np.array, yhat: np.array):
+        """
+        :param y: np.array shape : (batch_size , d)
+        :param yhat: np.array shape : (batch_size , d)
+        :return: np.array shape : (batch_size ,)
+        """
+        assert y.shape == yhat.shape, ValueError(
+            f"y et yhat doivent avoir la meme dimension."
+        )
+        # eviter les valeurs nulles pour le log
+        yhat = np.clip(yhat, self.eps, 1 - self.eps) 
+        return -np.sum((y * np.log(yhat) + (1 - y) * np.log(1 - yhat)), axis=1)
+
+    def backward(self, y, yhat):
+        """
+        :param y: batch x d
+        :param yhat: batch x d
+        :return: batch x d
+        """
+
+        assert y.shape == yhat.shape, ValueError(
+            f"y et yhat doivent avoir la meme dimension."
+        )
+        # eviter les valeurs nulles pour le log
+        yhat = np.clip(yhat, self.eps, 1 - self.eps)
+        return - (y / yhat - (1 - y) / (1 - yhat))
