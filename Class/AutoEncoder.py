@@ -10,19 +10,15 @@ class AutoEncoder(Module):
     def __init__(self, DIM_IN, fc_act):
         super().__init__()
         self.encoder = Sequential(
-            Linear(DIM_IN, 500),
+            Linear(DIM_IN, 200),
             fc_act,
-            Linear(500, 100),
-            fc_act,
-            Linear(100, 10),
+            Linear(200, 10),
             fc_act
         )
         self.decoder = Sequential(
-            Linear(10, 100),
+            Linear(10, 200),
             fc_act,
-            Linear(100, 500),
-            fc_act,
-            Linear(500, DIM_IN),
+            Linear(200, DIM_IN),
             Sigmoid()
         )
     def forward(self, x):
