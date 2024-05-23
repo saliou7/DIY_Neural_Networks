@@ -88,8 +88,10 @@ class Optim(object):
                 batch_x = x_train[i : i + batch_size]
                 batch_y = y_train[i : i + batch_size]
                 cost += np.mean(self.step(batch_x, batch_y))
+                #print(cost)
 
             cost /= num_samples // batch_size
+            #print(cost)
 
             if plot:
                 costs.append(cost)
@@ -109,18 +111,18 @@ class Optim(object):
 
     def plot(self, costs, acc_train, acc_test):
 
-        fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 5))
-        ax1.set_title("Training Cost")
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 5))
+        ax1.set_title("Training Loss")
         ax1.set_xlabel("Epochs")
-        ax1.set_ylabel("cost")
+        ax1.set_ylabel("Loss")
         ax1.plot(costs)
 
-        ax2.set_title("Training Accuracy")
+        # representer l'accuracy de train et test
+        ax2.set_title("Training and Test Accuracy")
         ax2.set_xlabel("Epochs")
-        ax2.set_ylabel("train accuracy in %")
-        ax2.plot(acc_train)
-
-        ax3.set_title("Test Accuracy")
-        ax3.set_xlabel("Epochs")
-        ax3.set_ylabel("test accuracy in %")
-        ax3.plot(acc_test)
+        ax2.set_ylabel("Accuracy (%)")
+        ax2.plot(acc_train, label="Train", color="red")
+        ax2.plot(acc_test, label="Test", color="blue")
+        ax2.legend()
+        plt.show()
+        

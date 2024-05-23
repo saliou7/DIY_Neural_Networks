@@ -58,11 +58,11 @@ class SoftMax(Module):
         # pas de parametres donc on fait rien
         return None
 
-    def backward_update_gradient(self, X: np.array, delta: np.array):
+    def backward_update_gradient(self, X, delta):
         # Softmax n'a pas de parametres donc pas besoin de faire ca.
         pass
 
-    def backward_delta(self, X: np.array, delta: np.array):
+    def backward_delta(self, X, delta):
         """Calcul la derivee de l'erreur par rapport aux inputs
 
         :param X: batch x layer_size
@@ -75,7 +75,7 @@ class SoftMax(Module):
 
         return softmax * (1 - softmax) * delta
 
-    def forward(self, X: np.array):
+    def forward(self, X):
         """
 
         :param X: np.array shape : (batch_size , layer_size)

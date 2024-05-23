@@ -88,22 +88,26 @@ class LogSoftMaxCrossEntropy(Loss):
     
 
 class BCELoss(Loss):
-    def __init__(self, eps=1e-8):
+    def __init__(self, eps=1e-12):
         super().__init__()
         self.eps = eps
 
-    def forward(self, y: np.array, yhat: np.array):
+    def forward(self, y, yhat):
         """
         :param y: np.array shape : (batch_size , d)
         :param yhat: np.array shape : (batch_size , d)
         :return: np.array shape : (batch_size ,)
         """
-        assert y.shape == yhat.shape, ValueError(
-            f"y et yhat doivent avoir la meme dimension."
-        )
-        # eviter les valeurs nulles pour le log
-        yhat = np.clip(yhat, self.eps, 1 - self.eps) 
-        return -np.sum((y * np.log(yhat) + (1 - y) * np.log(1 - yhat)), axis=1)
+        # assert y.shape == yhat.shape, ValueError(
+        #     f"y et yhat doivent avoir la meme dimension."
+        # )
+        # # eviter les valeurs nulles pour le log
+        # yhat = np.clip(yhat, self.eps, 1 - self.eps) 
+        # return -np.sum((y * np.log(yhat) + (1 - y) * np.log(1 - yhat)), axis=1)
+    
+        eps = 1e-3
+        a = -(y * (np.log(yhat + eps)) + (1 - y) * np.log(1 - yhat + eps))
+        return np.nan_to_num(a, nan=-100)
 
     def backward(self, y, yhat):
         """
@@ -112,9 +116,16 @@ class BCELoss(Loss):
         :return: batch x d
         """
 
-        assert y.shape == yhat.shape, ValueError(
-            f"y et yhat doivent avoir la meme dimension."
-        )
-        # eviter les valeurs nulles pour le log
-        yhat = np.clip(yhat, self.eps, 1 - self.eps)
-        return - (y / yhat - (1 - y) / (1 - yhat))
+        # assert y.shape == yhat.shape, ValueError(
+        #     f"y et yhat doivent avoir la meme dimension."
+        # )
+        # # eviter les valeurs nulles pour le log
+        # yhat = np.clip(yhat, self.eps, 1 - self.eps)
+        # # calcul du gradient
+        # return -(y / yhat - (1 - y) / yhat)
+        # #return (yhat - y) / (yhat * (1 - yhat) * y.shape[0])
+
+        eps = 1e-3 #facteur a augmenter en cas d'instabilite numerique
+        
+        assert y.shape == yhat.shape
+        return -(y * 1 / (yhat + eps) - (1 - y) * 1 / (1 - yhat + eps))

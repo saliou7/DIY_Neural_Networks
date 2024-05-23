@@ -33,6 +33,7 @@ class Linear(Module):
         )
 
     def forward(self, x):
+        #print(x.shape)
         assert (
             x.shape[1] == self.input_dim
         ), "Input x must have shape (batch_size, input_dim)"
